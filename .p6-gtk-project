@@ -1,0 +1,12 @@
+prefix=Grilo
+struct-prefix=Grl
+modules=Grilo:Raw::Types
+backups=backup,bitbucket,google-backup,azure-backup,hut
+hfile-prefix=
+lib=gtop
+include-directory=/usr/include/libgtop-2.0
+exec=
+subprefixes=
+idir-avail=True
+extension=.h
+build-exclude=Grilo:Raw::Traps
