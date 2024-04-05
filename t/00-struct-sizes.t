@@ -6,7 +6,7 @@ use NativeCall;
 use GLib::Raw::Subs;
 use GLib::Top::Raw::Structs;
 
-plan 32;
+plan 33;
 
 require ::($_ = "GLib::Top::Raw::Structs");
 for ::($_ ~ "::EXPORT::DEFAULT").WHO
