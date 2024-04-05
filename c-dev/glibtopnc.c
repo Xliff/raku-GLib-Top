@@ -150,3 +150,7 @@ glibtop_proc_open_files *alloc_glibtop_proc_open_files (void) {
 glibtop_netlist *alloc_glibtop_netlist (void) {
   return (glibtop_netlist *)malloc( sizeof(glibtop_netlist) );
 }
+
+glibtop_proc_kernel *alloc_glibtop_proc_kernel (void) {
+  return (glibtop_proc_kernel *)malloc( sizeof(glibtop_proc_kernel) );
+}
