@@ -87,16 +87,6 @@ sub glibtop_get_proclist_s (
 
 ### /usr/include/libgtop-2.0/glibtop/procuid.h
 
-sub _glibtop_init_proc_uid_p (glibtop $server)
-  is      native(gtop)
-  is      export
-{ * }
-
-sub _glibtop_init_proc_uid_s (glibtop $server)
-  is      native(gtop)
-  is      export
-{ * }
-
 sub glibtop_get_proc_uid (
   glibtop_proc_uid $buf,
   pid_t            $pid
@@ -131,6 +121,8 @@ sub glibtop_get_proc_uid_s (
   is      native(gtop)
   is      export
 { * }
+
+### /usr/include/libgtop-2.0/glibtop/procwd.h
 
 sub glibtop_get_proc_wd (glibtop_proc_wd $buf, pid_t $pid)
   returns CArray[ CArray[uint8] ]
@@ -168,6 +160,8 @@ sub glibtop_get_proc_wd_s (
   is      native(gtop)
   is      export
 { * }
+
+### /usr/include/libgtop-2.0/glibtop/procmem.h
 
 sub glibtop_get_proc_mem (
   glibtop_proc_mem $buf,
@@ -316,16 +310,6 @@ sub glibtop_get_proc_segment_s (
 
 ### /usr/include/libgtop-2.0/glibtop/cpu.h
 
-sub _glibtop_init_cpu_p (glibtop $server)
-  is      native(gtop)
-  is      export
-{ * }
-
-sub _glibtop_init_cpu_s (glibtop $server)
-  is      native(gtop)
-  is      export
-{ * }
-
 sub glibtop_get_cpu (glibtop_cpu $buf)
   is      native(gtop)
   is      export
@@ -357,16 +341,6 @@ sub glibtop_get_cpu_s (
 
 ### /usr/include/libgtop-2.0/glibtop/uptime.h
 
-sub _glibtop_init_uptime_p (glibtop $server)
-  is      native(gtop)
-  is      export
-{ * }
-
-sub _glibtop_init_uptime_s (glibtop $server)
-  is      native(gtop)
-  is      export
-{ * }
-
 sub glibtop_get_uptime (glibtop_uptime $buf)
   is      native(gtop)
   is      export
@@ -397,16 +371,6 @@ sub glibtop_get_uptime_s (
 { * }
 
 ### /usr/include/libgtop-2.0/glibtop/proctime.h
-
-sub _glibtop_init_proc_time_p (glibtop $server)
-  is      native(gtop)
-  is      export
-{ * }
-
-sub _glibtop_init_proc_time_s (glibtop $server)
-  is      native(gtop)
-  is      export
-{ * }
 
 sub glibtop_get_proc_time (
   glibtop_proc_time $buf,
@@ -445,16 +409,6 @@ sub glibtop_get_proc_time_s (
 
 ### /usr/include/libgtop-2.0/glibtop/procsignal.h
 
-sub _glibtop_init_proc_signal_p (glibtop $server)
-  is      native(gtop)
-  is      export
-{ * }
-
-sub _glibtop_init_proc_signal_s (glibtop $server)
-  is      native(gtop)
-  is      export
-{ * }
-
 sub glibtop_get_proc_signal (
   glibtop_proc_signal $buf,
   pid_t               $pid
@@ -485,6 +439,110 @@ sub glibtop_get_proc_signal_s (
   glibtop             $server,
   glibtop_proc_signal $buf,
   pid_t               $pid
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+
+### /usr/include/libgtop-2.0/glibtop/prockernel.h
+
+sub glibtop_get_proc_kernel (
+  glibtop_proc_kernel $buf,
+  pid_t               $pid
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_proc_kernel_l (
+  glibtop             $server,
+  glibtop_proc_kernel $buf,
+  pid_t               $pid
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_proc_kernel_p (
+  glibtop             $server,
+  glibtop_proc_kernel $buf,
+  pid_t               $pid
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_proc_kernel_s (
+  glibtop             $server,
+  glibtop_proc_kernel $buf,
+  pid_t               $pid
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+### /usr/include/libgtop-2.0/glibtop/procio.h
+
+sub glibtop_get_proc_io (
+  glibtop_proc_io $buf,
+  pid_t           $pid
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_proc_io_l (
+  glibtop         $server,
+  glibtop_proc_io $buf,
+  pid_t           $pid
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_proc_io_p (
+  glibtop         $server,
+  glibtop_proc_io $buf,
+  pid_t           $pid
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_proc_io_s (
+  glibtop         $server,
+  glibtop_proc_io $buf,
+  pid_t           $pid
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+
+### /usr/include/libgtop-2.0/glibtop/fsusage.h
+
+sub glibtop_get_fsusage (
+  glibtop_fsusage $buf,
+  Str             $mount_dir
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_fsusage_l (
+  glibtop         $server,
+  glibtop_fsusage $buf,
+  Str             $mount_dir
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_fsusage_s (
+  glibtop         $server,
+  glibtop_fsusage $buf,
+  Str             $mount_dir
 )
   is      native(gtop)
   is      export

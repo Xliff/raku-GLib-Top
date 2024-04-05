@@ -203,23 +203,35 @@ class glibtop_ppp is repr<CStruct> is export {
 }
 
 class glibtop_proc_affinity is repr<CStruct> is export {
-	has guint64  $.flags;
+	has guint64  $.affinity-flags;
 	has guint32  $.number;
 	has gboolean $!all;
 }
 
 class glibtop_proc_args is repr<CStruct> is export {
-	has guint64 $.flags;
+	has guint64 $.arg-flags;
 	has guint64 $.size;
 }
 
 class glibtop_proc_io is repr<CStruct> is export {
-	has guint64 $.flags;
+	has guint64 $.io-flags;
 	has guint64 $.disk_rchar;
 	has guint64 $.disk_wchar;
 	has guint64 $.disk_rbytes;
 	has guint64 $.disk_wbytes;
 	HAS guint64 @.reserved[10] is CArray;
+
+	method flags { $!io-flags }
+
+	sub alloc_glibtop_proc_io
+		returns Pointer
+		is      native(glibtop-helper)
+		is      export
+	{ * }
+
+	method alloc {
+		nativecast(glibtop_proc_io, alloc_glibtop_proc_io);
+	}
 }
 
 class glibtop_proc_map is repr<CStruct> is export {
@@ -227,6 +239,8 @@ class glibtop_proc_map is repr<CStruct> is export {
 	has guint64 $.number;
 	has guint64 $.total;
 	has guint64 $.size;
+
+	method flags { $!map-flags }
 
 	method get_type {
 		state ($n, $t);
@@ -244,7 +258,7 @@ class glibtop_proc_map is repr<CStruct> is export {
 class glibtop_map_entry is repr<CStruct> is export {
 	constant filenamesize = GLIBTOP_MAP_FILENAME_LEN + 1;
 
-  has guint64 $.map-entry-flags;
+  has guint64 $.flags;
   has guint64 $.start;
   has guint64 $.end;
   has guint64 $.offset;
@@ -293,6 +307,8 @@ class glibtop_proc_mem is repr<CStruct> is export {
 	has guint64 $.share;
 	has guint64 $.rss;
 	has guint64 $.rss_rlim;
+
+	method flags { $!mem-flags }
 }
 
 class glibtop_open_file_entry_sock
@@ -308,6 +324,8 @@ class glibtop_open_file_entry_sock
 	method dest-host ( :$encoding = 'utf8' ) {
 		Buf.new( @!raw_dest_host[^desthostsize] ).decode($encoding);
 	}
+
+	method name { $.dest-host }
 
 }
 
@@ -355,6 +373,12 @@ class glibtop_open_files_entry is repr<CStruct> is export {
     }
 	}
 
+	method name {
+		my $i = $.info;
+
+		$i ~~ Str ?? $i !! $i.name
+	}
+
 	method raw-info { $!info }
 
 	method get_type {
@@ -377,14 +401,16 @@ class glibtop_open_files_entry is repr<CStruct> is export {
 }
 
 class glibtop_proc_open_files is repr<CStruct> is export {
-	has guint64 $.flags;
+	has guint64 $.of-flags;
 	has guint64 $.number;
 	has guint64 $.total;
 	has guint64 $.size;
+
+	method flags { $!of-flags }
 }
 
 class glibtop_proc_segment is repr<CStruct> is export {
-	has guint64 $.flags;
+	has guint64 $.seg-flags;
 	has guint64 $.text_rss;
 	has guint64 $.shlib_rss;
 	has guint64 $.data_rss;
@@ -393,6 +419,8 @@ class glibtop_proc_segment is repr<CStruct> is export {
 	has guint64 $.start_code;
 	has guint64 $.end_code;
 	has guint64 $.start_stack;
+
+	method flags { $!seg-flags }
 }
 
 class glibtop_proclist is repr<CStruct> is export {
@@ -459,10 +487,16 @@ class glibtop_proc_uid is repr<CStruct> is export {
   has gint32  $.priority;      #= kernel scheduling priority */
   has gint32  $.nice;      #= standard unix nice level of process */
   has gint32  $.ngroups;
-	HAS gint32  @.groups[GLIBTOP_MAX_GROUPS]  is CArray;
+	HAS gint32  @!groups[GLIBTOP_MAX_GROUPS]  is CArray;
+
+	method flags { $!uid-flags }
 
 	method alloc {
 		nativecast(glibtop_proc_uid, alloc_glibtop_proc_uid);
+	}
+
+	method groups {
+		@!groups[ ^$!ngroups ];
 	}
 }
 
@@ -480,6 +514,8 @@ class glibtop_proc_wd is repr<CStruct> is export {
 	has guint32       $.number;
 	HAS uint8         @!root[rootsize] is CArray;
 	HAS uint8         @!exe[exesize] is CArray;
+
+	method flags { $!wd-flags }
 
 	submethod BUILD {
 	 	# @!root[$_] = 0 for GLIBTOP_PROC_WD_ROOT_LEN.succ;
@@ -514,6 +550,8 @@ class glibtop_proc_time is repr<CStruct> is export {
 	HAS guint64 @.xcpu_utime[GLIBTOP_NCPU] is CArray;
 	HAS guint64 @.xcpu_stime[GLIBTOP_NCPU] is CArray;
 
+	method flags { $!proc-time-flags }
+
 	sub alloc_glibtop_proc_time
 		returns Pointer
 		is      native(glibtop-helper)
@@ -547,6 +585,8 @@ class glibtop_proc_signal is repr<CStruct> is export {
   HAS guint64 @.sigignore[2] is CArray;
   HAS guint64 @.sigcatch[2]  is CArray;
 
+	method flags { $!signal-flags }
+
 	sub alloc_glibtop_proc_signal
 		returns Pointer
 		is      native(glibtop-helper)
@@ -558,6 +598,34 @@ class glibtop_proc_signal is repr<CStruct> is export {
 	}
 }
 
+class glibtop_proc_kernel is repr<CStruct> is export {
+  has guint64 $.pk-flags;
+  has guint64 $.k_flags;
+  has guint64 $.min_flt;
+  has guint64 $.maj_flt;
+  has guint64 $.cmin_flt;
+  has guint64 $.cmaj_flt;
+  has guint64 $.kstk_esp;
+  has guint64 $.kstk_eip;
+  has guint64 $.nwchan;
+  HAS uint8   @!wchan[40] is CArray;
+
+	method flags { $!pk-flags }
+
+	sub alloc_glibtop_proc_kernel
+		returns Pointer
+		is      native(glibtop-helper)
+		is      export
+	{ * }
+
+	method wchan ( :$encoding = 'utf8' ) {
+		Buf.new( @!wchan ).decode($encoding);
+	}
+
+	method alloc {
+		cast(glibtop_proc_kernel, alloc_glibtop_proc_kernel);
+	}
+}
 
 # class glibtop_union is repr<CUnion> is export {
 # 	HAS glibtop_cpu		          $.cpu;

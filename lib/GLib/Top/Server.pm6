@@ -60,46 +60,69 @@ class GLib::Top {
     $buf;
   }
 
+  proto method get_fsusage (|)
+  { * }
+
+  multi method get_fsusage (Str() $mount-dir) {
+    samewith(glibtop_fsusage.new, $mount-dir);
+  }
+  multi method get_fsusage (glibtop_fsusage $buf, Str() $mount-dir) {
+    glibtop_get_fsusage($buf, $mount-dir);
+    $buf;
+  }
+
   proto method get_proclist (|)
   { * }
 
   multi method get_proclist (
-    :$files   = False,
-    :$pids    = False,
-    :$uid     = True,
-    :$map     = False,
-    :$mem     = True,
-    :$segment = False,
-    :$signal  = False,
-    :$time    = True,
-    :$wd      = True
+    :$files,
+    :$pids,
+    :$uid,
+    :$kernel,
+    :$io,
+    :$map,
+    :$mem,
+    :$segment,
+    :$signal,
+    :$time,
+    :$wd,
+    :$all,
+    :$buf     = False
   ) {
-    samewith(
+    my $r = samewith(
       GLIBTOP_KERN_PROC_ALL,
       0,
       :$files,
       :$pids,
       :$uid,
+      :$kernel,
+      :$io,
       :$map,
       :$mem,
       :$segment,
       :$signal,
       :$time,
-      :$wd
+      :$wd,
+      :$all
     );
+    return $r.head unless $buf;
+    $r;
   }
   multi method get_proclist (
      $which,
      $arg,
-    :$files   = False,
-    :$pids    = False,
-    :$uid     = True,
-    :$map     = False,
-    :$mem     = True,
-    :$segment = False,
-    :$signal  = False,
-    :$time    = True,
-    :$wd      = True
+    :$files,
+    :$pids,
+    :$uid,
+    :$kernel,
+    :$io,
+    :$map,
+    :$mem,
+    :$segment,
+    :$signal,
+    :$time,
+    :$wd,
+    :$all
   ) {
     samewith(
       glibtop_proclist.new,
@@ -108,31 +131,62 @@ class GLib::Top {
       :$files,
       :$pids
       :$uid,
+      :$kernel,
+      :$io,
       :$map,
       :$mem,
       :$segment,
       :$signal,
       :$time,
-      :$wd
+      :$wd,
+      :$all
     );
   }
   multi method get_proclist (
     glibtop_proclist  $buf,
     Int()             $which,
     Int()             $arg,
-                     :$raw     = False,
-                     :$files   = False,
-                     :$pids    = False,
-                     :$uid     = True,
-                     :$map     = False,
-                     :$mem     = True,
-                     :$segment = False,
-                     :$signal  = False,
-                     :$time    = True,
-                     :$wd      = True,
-                     :$class   = False
+                     :$raw     is copy = False,
+                     :$files,
+                     :$pids,
+                     :$uid,
+                     :$kernel,
+                     :$io,
+                     :$map,
+                     :$mem,
+                     :$segment,
+                     :$signal,
+                     :$time,
+                     :$wd,
+                     :$class,
+                     :$all
   ) {
     my gint64 ($w, $a) = ($which, $arg);
+
+    my %u;
+    %u{$_} = True for do if $all {
+      qw<files pids uid kernel io map mem segment signal time wd>;
+    } else {
+      qw<uid mem time wd>;
+    }
+
+    my @a := (
+      $files,
+      $pids,
+      $uid,
+      $kernel,
+      $io,
+      $map,
+      $mem,
+      $segment,
+      $signal,
+      $time,
+      $wd
+    );
+
+    for @a -> $_ is raw {
+      %u{ .VAR.name.substr(1) } = $_
+    }
 
     my $pl = glibtop_get_proclist($buf, $w, $a);
     return ($pl, $buf) if $raw;
@@ -153,17 +207,21 @@ class GLib::Top {
             without %a{ $v.^name };
 
           for %a{ $v.^name }[] {
+            next if $_ eq 'reserved';
+
             $h{ $_ } = $v."{ $_ }"();
           }
         }
 
-        cpa( self.get_proc_uid($_)     ) if $uid;
-        cpa( self.get_proc_time($_)    ) if $time;
-        cpa( self.get_proc_mem($_)     ) if $mem;
-        cpa( self.get_proc_segment($_) ) if $segment;
-        cpa( self.get_proc_signal($_)  ) if $signal;
+        cpa( self.get_proc_uid($_)     ) if %u<uid>;
+        cpa( self.get_proc_kernel($_)  ) if %u<kernel>;
+        cpa( self.get_proc_io($_)      ) if %u<io>;
+        cpa( self.get_proc_time($_)    ) if %u<time>;
+        cpa( self.get_proc_mem($_)     ) if %u<mem>;
+        cpa( self.get_proc_segment($_) ) if %u<segment>;
+        cpa( self.get_proc_signal($_)  ) if %u<signal>;
 
-        if $files {
+        if %u<files> {
           my $of = self.get_proc_files($_);
 
           if $class {
@@ -183,14 +241,14 @@ class GLib::Top {
           }
         }
 
-        if $wd {
+        if %u<wd> {
           my $wdb = self.get_proc_wd($_);
 
           cpa($wdb.tail);
           $h<working-dirs> = CArrayToArray($wdb.head);
         }
 
-        if $map {
+        if %u<map> {
           my $me = self.get_proc_map($_);
 
           cpa($me.tail);
@@ -345,6 +403,38 @@ class GLib::Top {
 
     glibtop_get_proc_time($buf, $p);
     $buf
+  }
+
+  proto method get_proc_kernel (|)
+  { * }
+
+  multi method get_proc_kernel ($pid) {
+    samewith(glibtop_proc_kernel.alloc, $pid);
+  }
+  multi method get_proc_kernel (
+    glibtop_proc_kernel $buf,
+    Int()               $pid
+  ) {
+    my pid_t $p = $pid;
+
+    glibtop_get_proc_kernel($buf, $p);
+    $buf;
+  }
+
+  proto method get_proc_io (|)
+  { * }
+
+  multi method get_proc_io ($pid) {
+    samewith(glibtop_proc_io.alloc, $pid);
+  }
+  multi method get_proc_io (
+    glibtop_proc_io $buf,
+    Int()           $pid
+  ) {
+    my pid_t $p = $pid;
+
+    glibtop_get_proc_io($buf, $p);
+    $buf;
   }
 
 }
