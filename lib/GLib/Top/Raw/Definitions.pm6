@@ -127,7 +127,11 @@ constant GLIBTOP_MAP_PERM_WRITE          is export = 2;
 constant GLIBTOP_MAP_PERM_EXECUTE        is export = 4;
 constant GLIBTOP_MAP_PERM_SHARED         is export = 8;
 constant GLIBTOP_MAP_PERM_PRIVATE        is export = 16;
-
+constant GLIBTOP_MOUNTLIST_NUMBER        is export = 0;
+constant GLIBTOP_MOUNTLIST_TOTAL         is export = 1;
+constant GLIBTOP_MOUNTLIST_SIZE          is export = 2;
+constant GLIBTOP_MAX_MOUNTLIST           is export = 3;
+constant GLIBTOP_MOUNTENTRY_LEN          is export = 79;
 
 constant glibtop_file_type is export := guint16;
 our enum glibtop_file_type_enum is export (
