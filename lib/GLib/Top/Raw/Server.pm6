@@ -547,3 +547,231 @@ sub glibtop_get_fsusage_s (
   is      native(gtop)
   is      export
 { * }
+
+### /usr/include/libgtop-2.0/glibtop/mountlist.h
+
+#| Returns: Pointer [Array of glibtop_mountentry]
+sub glibtop_get_mountlist (
+  glibtop_mountlist $buf,
+  gint              $all_fs
+)
+  returns Pointer
+  is      native(gtop)
+  is      export
+{ * }
+
+#| Returns: Pointer [Array of glibtop_mountentry]
+sub glibtop_get_mountlist_l (
+  glibtop           $server,
+  glibtop_mountlist $buf,
+  gint              $all_fs
+)
+  returns Pointer
+  is      native(gtop)
+  is      export
+{ * }
+
+#| Returns: Pointer [Array of glibtop_mountentry]
+sub glibtop_get_mountlist_s (
+  glibtop           $server,
+  glibtop_mountlist $buf,
+  gint              $all_fs
+)
+  returns Pointer
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_mountentry_get_type
+  returns GType
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_mountlist_get_type
+  returns GType
+  is      native(gtop)
+  is      export
+{ * }
+
+### /usr/include/libgtop-2.0/glibtop/sysinfo.h
+
+sub glibtop_get_sysinfo
+  returns glibtop_sysinfo
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_sysinfo_s (glibtop $server)
+  returns glibtop_sysinfo
+  is      native(gtop)
+  is      export
+{ * }
+
+
+### /usr/include/libgtop-2.0/glibtop/netlist.h
+
+sub glibtop_get_netlist (glibtop_netlist $buf)
+  returns CArray[Str]
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_netlist_l (
+  glibtop         $server,
+  glibtop_netlist $buf
+)
+  returns CArray[Str]
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_netlist_p (
+  glibtop         $server,
+  glibtop_netlist $buf
+)
+  returns CArray[Str]
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_netlist_s (
+  glibtop         $server,
+  glibtop_netlist $buf
+)
+  returns CArray[Str]
+  is      native(gtop)
+  is      export
+{ * }
+
+
+### /usr/include/libgtop-2.0/glibtop/netload.h
+
+sub glibtop_get_netload (
+  glibtop_netload $buf,
+  Str             $interface
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_netload_l (
+  glibtop         $server,
+  glibtop_netload $buf,
+  Str             $interface
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_netload_p (
+  glibtop         $server,
+  glibtop_netload $buf,
+  Str             $interface
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_netload_s (
+  glibtop         $server,
+  glibtop_netload $buf,
+  Str             $interface
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+### /usr/include/libgtop-2.0/glibtop/loadavg.h
+
+sub glibtop_get_loadavg (glibtop_loadavg $buf)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_loadavg_l (
+  glibtop         $server,
+  glibtop_loadavg $buf
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_loadavg_p (
+  glibtop         $server,
+  glibtop_loadavg $buf
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_loadavg_s (
+  glibtop         $server,
+  glibtop_loadavg $buf
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+### /usr/include/libgtop-2.0/glibtop/mem.h
+
+sub glibtop_get_mem (glibtop_mem $buf)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_mem_l (
+  glibtop     $server,
+  glibtop_mem $buf
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_mem_p (
+  glibtop     $server,
+  glibtop_mem $buf
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_mem_s (
+  glibtop     $server,
+  glibtop_mem $buf
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+
+### /usr/include/libgtop-2.0/glibtop/swap.h
+
+sub glibtop_get_swap (glibtop_swap $buf)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_swap_l (
+  glibtop      $server,
+  glibtop_swap $buf
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_swap_p (
+  glibtop      $server,
+  glibtop_swap $buf
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_swap_s (
+  glibtop      $server,
+  glibtop_swap $buf
+)
+  is      native(gtop)
+  is      export
+{ * }
