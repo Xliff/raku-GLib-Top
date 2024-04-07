@@ -172,6 +172,7 @@ class GLib::Top {
     :$mem,
     :$segment,
     :$signal,
+    :$state,
     :$time,
     :$wd,
     :$all,
@@ -190,6 +191,7 @@ class GLib::Top {
       :$mem,
       :$segment,
       :$signal,
+      :$state,
       :$time,
       :$wd,
       :$all
@@ -210,6 +212,7 @@ class GLib::Top {
     :$mem,
     :$segment,
     :$signal,
+    :$state,
     :$time,
     :$wd,
     :$all
@@ -228,6 +231,7 @@ class GLib::Top {
       :$mem,
       :$segment,
       :$signal,
+      :$state,
       :$time,
       :$wd,
       :$all
@@ -248,19 +252,13 @@ class GLib::Top {
                      :$mem     is copy,
                      :$segment is copy,
                      :$signal  is copy,
+                     :$state   is copy,
                      :$time    is copy,
                      :$wd      is copy,
                      :$class,
                      :$all
   ) {
     my gint64 ($w, $a) = ($which, $arg);
-
-    my %u;
-    %u{$_} = True for do if $all {
-      qw<files pids args uid kernel io map mem segment signal time wd>;
-    } else {
-      qw<uid mem time wd>;
-    }
 
     my @a := (
       $files,
@@ -273,12 +271,21 @@ class GLib::Top {
       $mem,
       $segment,
       $signal,
+      $state,
       $time,
       $wd
     );
 
+    my @names = @a.map({ .VAR.name.substr(1) });
+
+    my %u;
+    %u{$_} = True for do if $all {
+      @names
+    } else {
+      qw<uid mem time wd>;
+    }
+
     for @a -> $_ is raw {
-      .VAR.name.substr(1).say;
       %u{ .VAR.name.substr(1) } //= $_
     }
 
@@ -307,13 +314,14 @@ class GLib::Top {
           }
         }
 
-        cpa( self.get_proc_uid($_)     ) if %u<uid>;
-        cpa( self.get_proc_kernel($_)  ) if %u<kernel>;
         cpa( self.get_proc_io($_)      ) if %u<io>;
-        cpa( self.get_proc_time($_)    ) if %u<time>;
+        cpa( self.get_proc_kernel($_)  ) if %u<kernel>;
         cpa( self.get_proc_mem($_)     ) if %u<mem>;
         cpa( self.get_proc_segment($_) ) if %u<segment>;
         cpa( self.get_proc_signal($_)  ) if %u<signal>;
+        cpa( self.get_proc_state($_)   ) if %u<state>;
+        cpa( self.get_proc_time($_)    ) if %u<time>;
+        cpa( self.get_proc_uid($_)     ) if %u<uid>;
 
         if %u<files> {
           my $of = self.get_proc_files($_);
@@ -509,6 +517,22 @@ class GLib::Top {
     my pid_t $p = $pid;
 
     glibtop_get_proc_signal($buf, $p);
+  }
+
+  proto method get_proc_state (|)
+  { * }
+
+  multi method get_proc_state (Int() $pid) {
+    samewith(glibtop_proc_state.alloc, $pid);
+  }
+  multi method get_proc_state (
+    glibtop_proc_state $buf,
+    Int()              $pid
+  ) {
+    my pid_t $p = $pid;
+
+    glibtop_get_proc_state($buf, $p);
+    $buf;
   }
 
   proto method get_proc_time (|)

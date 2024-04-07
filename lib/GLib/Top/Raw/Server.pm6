@@ -836,3 +836,41 @@ sub glibtop_get_proc_argv_l (
   is      native(gtop)
   is      export
 { * }
+
+
+### /usr/include/libgtop-2.0/glibtop/procstate.h
+
+sub glibtop_get_proc_state (
+  glibtop_proc_state $buf,
+  pid_t              $pid
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_proc_state_l (
+  glibtop            $server,
+  glibtop_proc_state $buf,
+  pid_t              $pid
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_proc_state_p (
+  glibtop            $server,
+  glibtop_proc_state $buf,
+  pid_t              $pid
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_proc_state_s (
+  glibtop            $server,
+  glibtop_proc_state $buf,
+  pid_t              $pid
+)
+  is      native(gtop)
+  is      export
+{ * }

@@ -748,6 +748,34 @@ class glibtop_loadavg is repr<CStruct> is export {
 	}
 }
 
+class glibtop_proc_state is repr<CStruct> is export {
+  has guint64 $.state-flags;
+  HAS uint8   @!cmd[40] is CArray;
+  has guint   $.state;
+  has gint    $.uid;
+  has gint    $.gid;
+  has gint    $.ruid;
+  has gint    $.rgid;
+  has gint    $.has_cpu;
+  has gint    $.processor;
+  has gint    $.last_processor;
+
+	method cmd ( :$encoding = 'utf8' ) {
+		Buf.new( @!cmd[^40] ).decode($encoding);
+	}
+
+	sub alloc_glibtop_proc_state
+		returns Pointer
+		is      native(glibtop-helper)
+		is      export
+	{ * }
+
+	method alloc {
+		cast(glibtop_proc_state, alloc_glibtop_proc_state);
+	}
+}
+
+
 # class glibtop_union is repr<CUnion> is export {
 # 	HAS glibtop_cpu		          $.cpu;
 # 	HAS glibtop_disk	          $.disk;
