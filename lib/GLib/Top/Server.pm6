@@ -164,6 +164,7 @@ class GLib::Top {
   multi method get_proclist (
     :$files,
     :$pids,
+    :$args,
     :$uid,
     :$kernel,
     :$io,
@@ -181,6 +182,7 @@ class GLib::Top {
       0,
       :$files,
       :$pids,
+      :$args,
       :$uid,
       :$kernel,
       :$io,
@@ -200,6 +202,7 @@ class GLib::Top {
      $arg,
     :$files,
     :$pids,
+    :$args,
     :$uid,
     :$kernel,
     :$io,
@@ -216,7 +219,8 @@ class GLib::Top {
       $which,
       $arg,
       :$files,
-      :$pids
+      :$args,
+      :$pids,
       :$uid,
       :$kernel,
       :$io,
@@ -234,17 +238,18 @@ class GLib::Top {
     Int()             $which,
     Int()             $arg,
                      :$raw     is copy = False,
-                     :$files,
-                     :$pids,
-                     :$uid,
-                     :$kernel,
-                     :$io,
-                     :$map,
-                     :$mem,
-                     :$segment,
-                     :$signal,
-                     :$time,
-                     :$wd,
+                     :$args    is copy,
+                     :$files   is copy,
+                     :$pids    is copy,
+                     :$uid     is copy,
+                     :$kernel  is copy,
+                     :$io      is copy,
+                     :$map     is copy,
+                     :$mem     is copy,
+                     :$segment is copy,
+                     :$signal  is copy,
+                     :$time    is copy,
+                     :$wd      is copy,
                      :$class,
                      :$all
   ) {
@@ -252,13 +257,14 @@ class GLib::Top {
 
     my %u;
     %u{$_} = True for do if $all {
-      qw<files pids uid kernel io map mem segment signal time wd>;
+      qw<files pids args uid kernel io map mem segment signal time wd>;
     } else {
       qw<uid mem time wd>;
     }
 
     my @a := (
       $files,
+      $args,
       $pids,
       $uid,
       $kernel,
@@ -272,7 +278,8 @@ class GLib::Top {
     );
 
     for @a -> $_ is raw {
-      %u{ .VAR.name.substr(1) } = $_
+      .VAR.name.substr(1).say;
+      %u{ .VAR.name.substr(1) } //= $_
     }
 
     my $pl = glibtop_get_proclist($buf, $w, $a);
@@ -328,6 +335,13 @@ class GLib::Top {
           }
         }
 
+        if %u<args> {
+          my $a = self.get_proc_argv($_);
+
+          cpa($a.tail);
+          $h<arguments> = $a.head;
+        }
+
         if %u<wd> {
           my $wdb = self.get_proc_wd($_);
 
@@ -346,6 +360,27 @@ class GLib::Top {
       }),
       $buf
     );
+  }
+
+  proto method get_proc_argv (|)
+  { * }
+
+  multi method get_proc_argv (Int() $pid, :$raw = False) {
+    samewith(glibtop_proc_args.new, $pid, :$raw);
+  }
+  multi method get_proc_argv (
+    glibtop_proc_args  $buf,
+    Int()              $pid,
+                      :$raw = False
+
+  ) {
+    my pid_t $p = $pid;
+
+    my $ca = glibtop_get_proc_argv($buf, $p);
+    return ($ca, $buf) if $raw;
+
+    $ca = CStringArrayToArray($ca);
+    ($ca, $buf)
   }
 
   proto method get_proc_uid (|)

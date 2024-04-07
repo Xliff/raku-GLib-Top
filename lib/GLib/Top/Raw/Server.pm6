@@ -775,3 +775,64 @@ sub glibtop_get_swap_s (
   is      native(gtop)
   is      export
 { * }
+
+
+### /usr/include/libgtop-2.0/glibtop/procargs.h
+
+sub glibtop_get_proc_args (
+  glibtop_proc_args $buf,
+  pid_t             $pid
+)
+  returns CArray[uint8]
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_proc_args_l (
+  glibtop           $server,
+  glibtop_proc_args $buf,
+  pid_t             $pid
+)
+  returns CArray[uint8]
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_proc_args_p (
+  glibtop           $server,
+  glibtop_proc_args $buf,
+  pid_t             $pid
+)
+  returns CArray[uint8]
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_proc_args_s (
+  glibtop           $server,
+  glibtop_proc_args $buf,
+  pid_t             $pid
+)
+  returns CArray[uint8]
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_proc_argv (
+  glibtop_proc_args $buf,
+  pid_t             $pid
+)
+  returns CArray[Str]
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_proc_argv_l (
+  glibtop           $server,
+  glibtop_proc_args $buf,
+  pid_t             $pid
+)
+  returns CArray[Str]
+  is      native(gtop)
+  is      export
+{ * }
