@@ -154,3 +154,11 @@ glibtop_netlist *alloc_glibtop_netlist (void) {
 glibtop_proc_kernel *alloc_glibtop_proc_kernel (void) {
   return (glibtop_proc_kernel *)malloc( sizeof(glibtop_proc_kernel) );
 }
+
+glibtop_mountentry *alloc_glibtop_mountentry (void) {
+  return (glibtop_mountentry *)malloc( sizeof(glibtop_mountentry) );
+}
+
+glibtop_loadavg *alloc_glibtop_loadavg (void) {
+  return (glibtop_loadavg *)malloc( sizeof(glibtop_loadavg) );
+}
