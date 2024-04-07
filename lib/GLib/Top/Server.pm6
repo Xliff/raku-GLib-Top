@@ -38,6 +38,10 @@ sub is-opened ($list, $file is copy) is export {
 class GLib::Top {
   also does GLib::Roles::StaticClass;
 
+  method get_sysinfo {
+    glibtop_get_sysinfo;
+  }
+
   proto method get_cpu (|)
   { * }
 
@@ -70,6 +74,89 @@ class GLib::Top {
     glibtop_get_fsusage($buf, $mount-dir);
     $buf;
   }
+
+  proto method get_loadavg (|)
+  { * }
+
+  multi method get_loadavg {
+    samewith(glibtop_loadavg.alloc);
+  }
+  multi method get_loadavg (glibtop_loadavg $buf) {
+    glibtop_get_loadavg($buf);
+    $buf;
+  }
+
+  multi method get_netload (Str() $i) {
+    samewith(glibtop_netload.alloc, $i);
+  }
+  multi method get_netload (glibtop_netload $buf, Str() $i) {
+    glibtop_get_netload($buf, $i);
+    $buf;
+  }
+
+  multi method get_mem {
+    samewith(glibtop_mem.new);
+  }
+  multi method get_mem (glibtop_mem $buf) {
+    glibtop_get_mem($buf);
+    $buf;
+  }
+
+  multi method get_swap {
+    samewith(glibtop_swap.new);
+  }
+  multi method get_swap (glibtop_swap $buf) {
+    glibtop_get_swap($buf);
+    $buf;
+  }
+
+  proto method get_mountlist (|)
+  { * }
+
+  multi method get_mountlist ( :$raw = False, :$all = False ) {
+    samewith(glibtop_mountlist.new, :$all, :$raw);
+  }
+  multi method get_mountlist (
+    glibtop_mountlist  $buf,
+                      :$all = False,
+                      :$raw = False
+  ) {
+    my gint32 $a  = $all.so.Int;
+
+    my $of = glibtop_get_mountlist($buf, $a);
+
+    unless $raw {
+      $of = GLib::Roles::TypedBuffer[glibtop_mountentry].new(
+        $of,
+        size => $buf.number
+      ).Array;
+    }
+
+    ( $of, $buf );
+  }
+
+  proto method get_netlist (|)
+  { * }
+
+  multi method get_netlist ( :$raw = False, :$all = False ) {
+    samewith(glibtop_netlist.new, :$all, :$raw);
+  }
+  multi method get_netlist (
+    glibtop_netlist  $buf,
+                    :$all = False,
+                    :$raw = False
+  ) {
+    my gint32 $a  = $all.so.Int;
+
+    my $of = glibtop_get_netlist($buf);
+
+    unless $raw {
+      $of = CStringArrayToArray($of);
+    }
+
+    ( $of, $buf );
+  }
+
 
   proto method get_proclist (|)
   { * }
