@@ -7,6 +7,9 @@ use GLib::Raw::Structs;
 use GLib::Raw::Subs;
 use GLib::Top::Raw::Definitions;
 
+use GLib::Array;
+use GLib::HashTable;
+
 unit package GLib::Top::Raw::Structs;
 
 # class file is repr<CStruct> is export does StructSkipsTest['missing'] {
@@ -120,12 +123,6 @@ class glibtop is repr<CStruct> is export {
 };
 
 
-class glibtop_entry is repr<CStruct> is export {
-	has GPtrArray  $!labels;
-	has GHashTable $!values;
-	has GHashTable $!descriptions;
-}
-
 class glibtop_fsusage is repr<CStruct> is export {
 	has guint64 $.flags;
 	has guint64 $.blocks;
@@ -155,6 +152,37 @@ class glibtop_mountlist is repr<CStruct> is export {
 	has guint64 $.number;
 	has guint64 $.total;
 	has guint64 $.size;
+}
+
+class glibtop_mountentry is repr<CStruct> is export {
+	constant mountentrylen = GLIBTOP_MOUNTENTRY_LEN + 1;
+
+  has guint64 $.dev;
+  HAS uint8   @!raw-devname[mountentrylen]  is CArray;
+  HAS uint8   @!raw-mountdir[mountentrylen] is CArray;
+  HAS uint8   @!raw-type[mountentrylen]     is CArray;
+
+	method devname ( :$encoding = 'utf8' ) {
+		Buf.new( @!raw-devname[^mountentrylen] ).decode($encoding)
+	}
+
+	method mountdir ( :$encoding = 'utf8' ) {
+		Buf.new( @!raw-mountdir[^mountentrylen] ).decode($encoding)
+	}
+
+	method type ( :$encoding = 'utf8' ) {
+		Buf.new( @!raw-type[^mountentrylen] ).decode($encoding)
+	}
+
+	sub alloc_glibtop_mountentry
+		returns Pointer
+		is      native(glibtop-helper)
+		is      export
+	{ * }
+
+	method alloc {
+		nativecast(glibtop_mountentry, alloc_glibtop_mountentry);
+	}
 }
 
 class glibtop_msg_limits is repr<CStruct> is export {
@@ -189,10 +217,46 @@ class glibtop_netload is repr<CStruct> is export {
 	has guint64 $.errors_out;
 	has guint64 $.errors_total;
 	has guint64 $.collisions;
-	HAS guint8  @.address6[16]    is CArray;
-	HAS guint8  @.prefix6[16]     is CArray;
+	HAS guint8  @.raw-address6[16]    is CArray;
+	HAS guint8  @.raw-prefix6[16]     is CArray;
 	has guint8  $.scope6;
-	HAS guint8  @.hwaddress[8]    is CArray;
+	HAS guint8  @.raw-hwaddress[8]    is CArray;
+
+	method address6 ( :$encoding = 'utf8' ) {
+		Buf.new( @!raw-address6[^16] ).decode($encoding);
+	}
+
+	method prefix6 ( :$encoding = 'utf8' ) {
+		Buf.new( @!raw-prefix6[^16] ).decode($encoding);
+	}
+
+	method hwaddress ( :$encoding = 'utf8' ) {
+		Buf.new( @!raw-hwaddress[^8] ).decode($encoding);
+	}
+
+	# method gist {
+	# 	my @v = do gather for self.^attributes {
+	# 		my $n = .name.substr(2);
+	# 		my $v = .get_value(self);
+	#
+	# 		take "{ $n } => { $v ~~ CArray ?? $v.^name !! $v }";
+	# 		if $n.contains('raw-') {
+	# 			$n .= subst('raw-', '');
+	# 			take "{ $n } => { self."{ $n }"() }";
+	# 		}
+	# 	}
+	# 	"{ self.^name }.new({ @v.join(', ') })";
+	# }
+
+	sub alloc_glibtop_netload
+		returns Pointer
+		is      native(glibtop-helper)
+		is      export
+	{ * }
+
+	method alloc {
+		nativecast(glibtop_netload, alloc_glibtop_netload);
+	}
 }
 
 class glibtop_ppp is repr<CStruct> is export {
@@ -462,6 +526,41 @@ class glibtop_swap is repr<CStruct> is export {
 	has guint64 $.pageout;
 }
 
+class glibtop_entry is repr<CStruct> is export {
+	has GPtrArray  $.raw-labels;
+	has GHashTable $.raw-values;
+	has GHashTable $.raw-descriptions;
+
+	method values {
+		GLib::HashTable.new($!raw-values);
+	}
+
+	method labels {
+		GLib::Array::String.new($!raw-labels).Array;
+	}
+
+}
+
+class glibtop_sysinfo is repr<CStruct> is export {
+	has guint64 $.flags;
+	has guint64 $.ncpu;
+	HAS uint8   @.raw-cpuinfo[ GLIBTOP_NCPU * nativesizeof(glibtop_entry) ] is CArray; #= glibtop_entry cpuinfo [GLIBTOP_NCPU];
+
+	method cpuinfo {
+		state %cache;
+
+		unless %cache{ +@!raw-cpuinfo.&p } {
+			%cache{ +@!raw-cpuinfo.&p } =
+				GLib::Roles::TypedBuffer[glibtop_entry].new-sized(
+					cast(Pointer, @!raw-cpuinfo),
+					$!ncpu
+				).Array
+		}
+
+		%cache{ +@!raw-cpuinfo.&p }
+	}
+}
+
 class glibtop_proc_uid is repr<CStruct> is export {
 	sub alloc_glibtop_proc_uid
 	  returns Pointer
@@ -612,18 +711,40 @@ class glibtop_proc_kernel is repr<CStruct> is export {
 
 	method flags { $!pk-flags }
 
+	method wchan ( :$encoding = 'utf8' ) {
+		Buf.new( @!wchan ).decode($encoding);
+	}
+
 	sub alloc_glibtop_proc_kernel
 		returns Pointer
 		is      native(glibtop-helper)
 		is      export
 	{ * }
 
-	method wchan ( :$encoding = 'utf8' ) {
-		Buf.new( @!wchan ).decode($encoding);
+	method alloc {
+		cast(glibtop_proc_kernel, alloc_glibtop_proc_kernel);
+	}
+}
+
+class glibtop_loadavg is repr<CStruct> is export {
+  has guint64 $.loadavg-flags;
+  HAS gdouble @.loadavg[3] is CArray;
+  has guint64 $.nr_running;
+  has guint64 $.nr_tasks;
+  has guint64 $.last_pid;
+
+	sub alloc_glibtop_loadavg
+		returns Pointer
+		is      native(glibtop-helper)
+		is      export
+	{ * }
+
+	method loadavg {
+		CArrayToArray(@!loadavg, 3);
 	}
 
 	method alloc {
-		cast(glibtop_proc_kernel, alloc_glibtop_proc_kernel);
+		cast(glibtop_loadavg, alloc_glibtop_loadavg);
 	}
 }
 
