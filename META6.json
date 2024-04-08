@@ -1,0 +1,44 @@
+{
+  "auth": "cpan:CBWOOD",
+  "authors": [
+    "clifton.wood@gmail.com"
+  ],
+  "build-depends": [
+    "Text::Table::Simple",
+    "Dependency::Sort",
+    "Color",
+    "RandomColor",
+    "File::Find",
+    "LWP::Simple",
+    "Inline::Perl5",
+    "IO::Socket::SSL",
+    "DOM::Tiny"
+  ],
+  "depends": [
+	"GLib"
+  ],
+  "description": "Raku library bindings for GNOME's GLib-Top",
+  "license": "GPL-3.0",
+  "meta-version": "0",
+  "name": "GLib-Top",
+  "perl": "6.c",
+          "provides": {
+      "GLib::Top::Raw::Definitions" :  "lib/GLib/Top/Raw/Definitions.pm6" ,
+      "GLib::Top::Raw::Structs"     :  "lib/GLib/Top/Raw/Structs.pm6"     ,
+      "GLib::Top::Raw::Server"      :  "lib/GLib/Top/Raw/Server.pm6"      ,
+      "GLib::Top::Server"           :  "lib/GLib/Top/Server.pm6"          
+    },
+  "resources": [
+    "lib/linux/libglibtopnc.so",
+  ],
+  "source-url": "https://github.com/Xliff/raku-GLib-Top",
+  "support": {
+    "source": null
+  },
+  "tags": [
+  ],
+  "test-depends": [
+    "Test::META"
+  ],
+  "version": "0.0.1"
+}

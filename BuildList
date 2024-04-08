@@ -1,0 +1,13 @@
+GLib::Array
+GLib::HashTable
+GLib::Raw::Definitions
+GLib::Raw::Structs
+GLib::Raw::Subs
+GLib::Roles::Implementor
+GLib::Roles::StaticClass
+GLib::Roles::TypedBuffer
+NativeCall
+GLib::Top::Raw::Definitions
+GLib::Top::Raw::Structs
+GLib::Top::Raw::Server
+GLib::Top::Server
