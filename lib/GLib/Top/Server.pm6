@@ -102,6 +102,29 @@ class GLib::Top {
     $buf;
   }
 
+  proto method get_msg_limits (|)
+  { * }
+
+  multi method get_msg_limits {
+    samewith(glibtop_msg_limits.new);
+  }
+  multi method get_msg_limits (glibtop_msg_limits $buf) {
+    glibtop_get_msg_limits($buf);
+    $buf;
+  }
+
+
+  proto method get_shm_limits (|)
+  { * }
+
+  multi method get_shm_limits {
+    samewith(glibtop_shm_limits.new);
+  }
+  multi method get_shm_limits (glibtop_shm_limits $buf) {
+    glibtop_get_shm_limits($buf);
+    $buf;
+  }
+
   multi method get_swap {
     samewith(glibtop_swap.new);
   }

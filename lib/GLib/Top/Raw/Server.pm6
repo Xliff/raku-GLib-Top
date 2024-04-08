@@ -874,3 +874,62 @@ sub glibtop_get_proc_state_s (
   is      native(gtop)
   is      export
 { * }
+
+### /usr/include/libgtop-2.0/glibtop/shm_limits.h
+
+sub glibtop_get_shm_limits (glibtop_shm_limits $buf)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_shm_limits_l (
+  glibtop            $server,
+  glibtop_shm_limits $buf
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_shm_limits_p (glibtop $buf)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_shm_limits_s (
+  glibtop            $server,
+  glibtop_shm_limits $buf
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+### /usr/include/libgtop-2.0/glibtop/msg_limits.h
+
+sub glibtop_get_msg_limits (glibtop_msg_limits $buf)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_msg_limits_l (
+  glibtop            $server,
+  glibtop_msg_limits $buf
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_msg_limits_p (
+  glibtop            $server,
+  glibtop_msg_limits $buf
+)
+  is      native(gtop)
+  is      export
+{ * }
+
+sub glibtop_get_msg_limits_s (
+  glibtop            $server,
+  glibtop_msg_limits $buf
+)
+  is      native(gtop)
+  is      export
+{ * }
