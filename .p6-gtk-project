@@ -1,6 +1,6 @@
-prefix=Grilo
-struct-prefix=Grl
-modules=Grilo:Raw::Types
+prefix=GLib::Top
+struct-prefix=glibtop_
+modules=GLib::Top::Raw::Types
 backups=backup,bitbucket,google-backup,azure-backup,hut
 hfile-prefix=
 lib=gtop
@@ -9,4 +9,4 @@ exec=
 subprefixes=
 idir-avail=True
 extension=.h
-build-exclude=Grilo:Raw::Traps
+build-exclude=GLib::Top::Raw::Traps
