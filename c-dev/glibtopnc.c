@@ -154,7 +154,6 @@ glibtop_netlist *alloc_glibtop_netlist (void) {
 glibtop_proc_kernel *alloc_glibtop_proc_kernel (void) {
   return (glibtop_proc_kernel *)malloc( sizeof(glibtop_proc_kernel) );
 }
-<<<<<<< HEAD
 
 glibtop_mountentry *alloc_glibtop_mountentry (void) {
   return (glibtop_mountentry *)malloc( sizeof(glibtop_mountentry) );
@@ -163,5 +162,7 @@ glibtop_mountentry *alloc_glibtop_mountentry (void) {
 glibtop_loadavg *alloc_glibtop_loadavg (void) {
   return (glibtop_loadavg *)malloc( sizeof(glibtop_loadavg) );
 }
-=======
->>>>>>> 68f8f703cca15c2fcfb771ea13c978a21dd05cd5
+
+glibtop_proc_state *alloc_glibtop_proc_state (void) {
+  return (glibtop_proc_state *)malloc( sizeof(glibtop_proc_state) );
+}
