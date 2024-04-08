@@ -17,7 +17,7 @@ unit package GLib::Top::Raw::Structs;
 # }
 
 class glibtop_cpu is repr<CStruct> is export {
-	has guint64	$.flags;
+	has guint64	$.cpu-flags;
 	has guint64 $.total;
 	has guint64 $.user;
 	has guint64 $.nice;
@@ -36,6 +36,8 @@ class glibtop_cpu is repr<CStruct> is export {
 	HAS guint64 @.xcpu_irq[GLIBTOP_NCPU]     is CArray;
 	HAS guint64 @.xcpu_softirq[GLIBTOP_NCPU] is CArray;
 	has guint64 $.xcpu_flags;
+
+	method flags { $!cpu-flags }
 
 	method alloc {
 		sub alloc_glibtop_cpu
@@ -56,7 +58,7 @@ class glibtop_machine is repr<CStruct> is export {
 }
 
 class glibtop_sysdeps is repr<CStruct> is export {
-	has guint64 $.flags;
+	has guint64 $.sysdep-flags;
 	has guint64 $.features;
 	has guint64 $.cpu;
 	has guint64 $.mem;
@@ -93,6 +95,8 @@ class glibtop_sysdeps is repr<CStruct> is export {
 	has guint64 $.reserved5;
 	has guint64 $.reserved6;
 	has guint64 $.reserved7;
+
+	method flags { $!sysdep-flags }
 }
 
 class glibtop is repr<CStruct> is export {
@@ -124,7 +128,7 @@ class glibtop is repr<CStruct> is export {
 
 
 class glibtop_fsusage is repr<CStruct> is export {
-	has guint64 $.flags;
+	has guint64 $.fsusage-flags;
 	has guint64 $.blocks;
 	has guint64 $.bfree;
 	has guint64 $.bavail;
@@ -133,10 +137,12 @@ class glibtop_fsusage is repr<CStruct> is export {
 	has guint32 $.block_size;
 	has guint64 $.read;
 	has guint64 $.write;
+
+	method flags { $!fsusage-flags }
 }
 
 class glibtop_mem is repr<CStruct> is export {
-	has guint64 $.flags;
+	has guint64 $.mem-flags;
 	has guint64 $.total;
 	has guint64 $.used;
 	has guint64 $.free;
@@ -145,13 +151,17 @@ class glibtop_mem is repr<CStruct> is export {
 	has guint64 $.cached;
 	has guint64 $.user;
 	has guint64 $.locked;
+
+	method flags { $!mem-flags }
 }
 
 class glibtop_mountlist is repr<CStruct> is export {
-	has guint64 $.flags;
+	has guint64 $.mount-list-flags;
 	has guint64 $.number;
 	has guint64 $.total;
 	has guint64 $.size;
+
+	method flags { $!mount-list-flags }
 }
 
 class glibtop_mountentry is repr<CStruct> is export {
@@ -186,7 +196,7 @@ class glibtop_mountentry is repr<CStruct> is export {
 }
 
 class glibtop_msg_limits is repr<CStruct> is export {
-	has guint64 $.flags;
+	has guint64 $.msg-limit-flags;
 	has guint64 $.msgpool;
 	has guint64 $.msgmap;
 	has guint64 $.msgmax;
@@ -194,11 +204,15 @@ class glibtop_msg_limits is repr<CStruct> is export {
 	has guint64 $.msgmni;
 	has guint64 $.msgssz;
 	has guint64 $.msgtql;
+
+	method flags { $!msg-limit-flags }
 }
 
 class glibtop_netlist is repr<CStruct> is export {
 	has guint64 $.netlist-flags;
 	has guint32 $.number;
+
+	method flags { $!netlist-flags }
 }
 
 class glibtop_netload is repr<CStruct> is export {
@@ -221,6 +235,8 @@ class glibtop_netload is repr<CStruct> is export {
 	HAS guint8  @.raw-prefix6[16]     is CArray;
 	has guint8  $.scope6;
 	HAS guint8  @.raw-hwaddress[8]    is CArray;
+
+	method flags { $!netload-flags }
 
 	method address6 ( :$encoding = 'utf8' ) {
 		Buf.new( @!raw-address6[^16] ).decode($encoding);
@@ -260,21 +276,27 @@ class glibtop_netload is repr<CStruct> is export {
 }
 
 class glibtop_ppp is repr<CStruct> is export {
-	has guint64 $.flags;
+	has guint64 $.ppp-flags;
 	has guint64 $.state;
 	has guint64 $.bytes_in;
 	has guint64 $.bytes_out;
+
+	method flags { $!ppp-flags }
 }
 
 class glibtop_proc_affinity is repr<CStruct> is export {
 	has guint64  $.affinity-flags;
 	has guint32  $.number;
 	has gboolean $!all;
+
+	method flags { $!affinity-flags }
 }
 
 class glibtop_proc_args is repr<CStruct> is export {
 	has guint64 $.arg-flags;
 	has guint64 $.size;
+
+	method flags { $!arg-flags }
 }
 
 class glibtop_proc_io is repr<CStruct> is export {
@@ -322,7 +344,7 @@ class glibtop_proc_map is repr<CStruct> is export {
 class glibtop_map_entry is repr<CStruct> is export {
 	constant filenamesize = GLIBTOP_MAP_FILENAME_LEN + 1;
 
-  has guint64 $.flags;
+  has guint64 $.map-entry-flags;
   has guint64 $.start;
   has guint64 $.end;
   has guint64 $.offset;
@@ -338,6 +360,8 @@ class glibtop_map_entry is repr<CStruct> is export {
   has guint64 $.pss;
   has guint64 $.swap;
   HAS uint8   @.raw-filename[filenamesize] is CArray;
+
+	method flags { $!map-entry-flags }
 
 	method filename (Str() $encoding = 'utf8') {
 		Buf.new( @!raw-filename ).decode($encoding);
@@ -364,7 +388,7 @@ class glibtop_map_entry is repr<CStruct> is export {
 
 
 class glibtop_proc_mem is repr<CStruct> is export {
-	has guint64 $.mem-flags;
+	has guint64 $.proc-mem-flags;
 	has guint64 $.size;
 	has guint64 $.vsize;
 	has guint64 $.resident;
@@ -372,7 +396,7 @@ class glibtop_proc_mem is repr<CStruct> is export {
 	has guint64 $.rss;
 	has guint64 $.rss_rlim;
 
-	method flags { $!mem-flags }
+	method flags { $!proc-mem-flags }
 }
 
 class glibtop_open_file_entry_sock
@@ -488,14 +512,16 @@ class glibtop_proc_segment is repr<CStruct> is export {
 }
 
 class glibtop_proclist is repr<CStruct> is export {
-	has guint64 $.flags;
+	has guint64 $.proc-flags;
 	has guint64 $.number;
 	has guint64 $.total;
 	has guint64 $.size;
+
+	method flags { $!proc-flags }
 }
 
 class glibtop_sem_limits is repr<CStruct> is export {
-	has guint64 $.flags;
+	has guint64 $.sem-flags;
 	has guint64 $.semmap;
 	has guint64 $.semmni;
 	has guint64 $.semmns;
@@ -506,24 +532,30 @@ class glibtop_sem_limits is repr<CStruct> is export {
 	has guint64 $.semusz;
 	has guint64 $.semvmx;
 	has guint64 $.semaem;
+
+	method flags { $!sem-flags }
 }
 
 class glibtop_shm_limits is repr<CStruct> is export {
-	has guint64 $.flags;
+	has guint64 $.shm-flags;
 	has guint64 $.shmmax;
 	has guint64 $.shmmin;
 	has guint64 $.shmmni;
 	has guint64 $.shmseg;
 	has guint64 $.shmall;
+
+	method flags { $!shm-flags }
 }
 
 class glibtop_swap is repr<CStruct> is export {
-	has guint64 $.flags;
+	has guint64 $.swap-flags;
 	has guint64 $.total;
 	has guint64 $.used;
 	has guint64 $.free;
 	has guint64 $.pagein;
 	has guint64 $.pageout;
+
+	method flags { $!swap-flags }
 }
 
 class glibtop_entry is repr<CStruct> is export {
@@ -542,9 +574,11 @@ class glibtop_entry is repr<CStruct> is export {
 }
 
 class glibtop_sysinfo is repr<CStruct> is export {
-	has guint64 $.flags;
+	has guint64 $.sys-flags;
 	has guint64 $.ncpu;
 	HAS uint8   @.raw-cpuinfo[ GLIBTOP_NCPU * nativesizeof(glibtop_entry) ] is CArray; #= glibtop_entry cpuinfo [GLIBTOP_NCPU];
+
+	method flags { $!sys-flags }
 
 	method cpuinfo {
 		state %cache;
@@ -669,6 +703,8 @@ class glibtop_uptime is repr<CStruct> is export {
 	has gdouble $.idletime;
 	has guint64 $.raw-boot-time;
 
+	method flags { $!uptime-flags }
+
 	method boot-time {
 		DateTime.new($!raw-boot-time);
 	}
@@ -733,6 +769,8 @@ class glibtop_loadavg is repr<CStruct> is export {
   has guint64 $.nr_tasks;
   has guint64 $.last_pid;
 
+	method flags { $!loadavg-flags }
+
 	sub alloc_glibtop_loadavg
 		returns Pointer
 		is      native(glibtop-helper)
@@ -759,6 +797,8 @@ class glibtop_proc_state is repr<CStruct> is export {
   has gint    $.has_cpu;
   has gint    $.processor;
   has gint    $.last_processor;
+
+	method flags { $!state-flags }
 
 	method cmd ( :$encoding = 'utf8' ) {
 		Buf.new( @!cmd[^40] ).decode($encoding);
