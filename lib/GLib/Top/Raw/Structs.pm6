@@ -413,7 +413,7 @@ class glibtop_open_file_entry_sock
 		Buf.new( @!raw_dest_host[^desthostsize] ).decode($encoding);
 	}
 
-	method name { $.dest-host }
+	method name { "{ $.dest-host }:{ $.dest-port }"; }
 
 }
 
