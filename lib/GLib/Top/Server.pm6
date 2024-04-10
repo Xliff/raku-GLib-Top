@@ -8,6 +8,7 @@ use GLib::Top::Raw::Structs;
 use GLib::Top::Raw::Server;
 
 use GLib::Roles::TypedBuffer;
+use GLib::Top::ParseTcpNet;
 
 use GLib::Roles::Implementor;
 use GLib::Roles::StaticClass;
@@ -179,7 +180,6 @@ class GLib::Top {
 
     ( $of, $buf );
   }
-
 
   proto method get_proclist (|)
   { * }
@@ -604,6 +604,22 @@ class GLib::Top {
 
     glibtop_get_proc_io($buf, $p);
     $buf;
+  }
+
+  method get_network_activity {
+    # cw: Using IO::Path.slurp gets a truncated file!
+    my $l = "/proc/net/tcp".IO.open( :r );
+    my $tcp = $l.slurp;
+    $l.close;
+
+    $l = "/proc/net/udp".IO.open( :r );
+    my $udp = $l.slurp;
+    $l.close;
+
+    %(
+      tcp => parse-proc-net-tcp($tcp),
+      udp => parse-proc-net-udp($udp)
+    );
   }
 
 }
